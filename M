@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MALAND - الإصدار النهائي للمرحلة الثانية</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      background: #0a120a;
+      overflow: hidden;
+      touch-action: none;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+    canvas {
+      display: block;
+      touch-action: none;
+    }
+    #gameCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ---- واجهة علوية ---- */
+    #topUI {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .panel {
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(6px);
+      border: 1px solid #4a8a4a;
+      border-radius: 12px;
+      padding: 8px 14px;
+      color: #eee;
+      font-size: 13px;
+      pointer-events: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+    #selectedInfo {
+      color: #ffdd44;
+      text-align: right;
+      max-width: 200px;
+      font-size: 12px;
+    }
+
+    /* ---- شريط الموارد ---- */
+    #resourceBar {
+      position: fixed;
+      top: 62px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(6px);
+      padding: 6px 14px;
+      border-radius: 14px;
+      border: 1px solid #3a7a3a;
+      pointer-events: none;
+    }
+    .resItem {
+      color: #ddd;
+      font-size: 12px;
+      background: #1a2a1a;
+      padding: 3px 10px;
+      border-radius: 8px;
+      border: 1px solid #2a5a2a;
+      white-space: nowrap;
+    }
+    .resItem b {
+      color: #ffdd44;
+      font-weight: bold;
+    }
+
+    /* ---- شريط الأزرار السفلي ---- */
+    #bottomBar {
+      position: fixed;
+      bottom: 12px;
+      left: 6px;
+      right: 6px;
+      z-index: 20;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      padding: 8px 6px;
+      border-radius: 16px;
+      border: 1px solid #4a7a4a;
+    }
+    #bottomBar button {
+      background: linear-gradient(145deg, #1e3c1e, #122812);
+      border: 1px solid #4a8a4a;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      touch-action: manipulation;
+      min-width: 38px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      transition: 0.08s;
+      border-bottom: 2px solid #2a5a2a;
+    }
+    #bottomBar button:active {
+      background: #3a7a3a;
+      transform: scale(0.93);
+      border-bottom-color: #6aaa6a;
+    }
+
+    /* ---- الخريطة الصغيرة ---- */
+    #minimapWrapper {
+      position: fixed;
+      bottom: 90px;
+      right: 10px;
+      z-index: 25;
+      width: 140px;
+      height: 140px;
+      border: 2px solid #d0ae50;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #0a1a0a;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.7);
+      cursor: pointer;
+      touch-action: auto;
+    }
+    #minimapCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: auto;
+    }
+
+    /* ---- رسالة إرشادية ---- */
+    #hint {
+      position: fixed;
+      bottom: 90px;
+      left: 10px;
+      z-index: 15;
+      color: #aaccaa;
+      font-size: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      padding: 5px 10px;
+      border-radius: 8px;
+      max-width: 160px;
+      line-height: 1.4;
+      pointer-events: none;
+    }
+
+    @media (max-width: 600px) {
+      .panel {
+        font-size: 11px;
+        padding: 5px 10px;
+      }
+      #selectedInfo {
+        font-size: 10px;
+        max-width: 130px;
+      }
+      .resItem {
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+      #bottomBar button {
+        font-size: 9px;
+        padding: 4px 6px;
+        min-width: 30px;
+      }
+      #minimapWrapper {
+        width: 100px;
+        height: 100px;
+        bottom: 80px;
+        right: 6px;
+      }
+      #hint {
+        font-size: 8px;
+        bottom: 80px;
+        left: 5px;
+        max-width: 110px;
+        padding: 3px 6px;
+      }
+      #resourceBar {
+        top: 56px;
+        padding: 4px 8px;
+        gap: 3px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- واجهة علوية -->
+  <div id="topUI">
+    <div class="panel">⚔️ MALAND · المرحلة الثانية<br><small>❄️ مملكة الشمال</small></div>
+    <div class="panel" id="selectedInfo">👆 اختر وحدة</div>
+  </div>
+
+  <!-- شريط الموارد -->
+  <div id="resourceBar">
+    <span class="resItem">🪵 <b id="woodDisplay">0</b></span>
+    <span class="resItem">🌾 <b id="foodDisplay">0</b></span>
+    <span class="resItem">🪨 <b id="stoneDisplay">0</b></span>
+    <span class="resItem">⛏️ <b id="ironDisplay">0</b></span>
+    <span class="resItem">💰 <b id="goldDisplay">0</b></span>
+    <span class="resItem">🏠 <b id="popDisplay">0</b>/<b id="popMaxDisplay">0</b></span>
+  </div>
+
+  <!-- الخريطة الصغيرة -->
+  <div id="minimapWrapper">
+    <canvas id="minimapCanvas"></canvas>
+  </div>
+
+  <!-- رسالة إرشادية -->
+  <div id="hint">🖐️ سحب: تحديد · نقرة: اختيار · ضغط مطول: أوامر</div>
+
+  <!-- شريط الأزرار السفلي -->
+  <div id="bottomBar">
+    <button id="btnWorker">👷 عامل</button>
+    <button id="btnInfantry">⚔️ مشاة</button>
+    <button id="btnArcher">🏹 رامي</button>
+    <button id="btnCavalry">🐴 فارس</button>
+    <button id="btnCannon">💥 مدفع</button>
+    <button id="btnHouse">🏠 منزل</button>
+    <button id="btnBarracks">🏛️ ثكنة</button>
+    <button id="btnMine">⛏️ منجم</button>
+    <button id="btnTower">🗼 برج</button>
+    <button id="btnAttack">⚡ هجوم</button>
+    <button id="btnStop">⏹️ وقف</button>
+  </div>
+
+  <!-- اللوحة الرئيسية -->
+  <canvas id="gameCanvas"></canvas>
+
+  <script>
+    // ================================================================
+    //  MALAND - الإصدار النهائي للمرحلة الثانية
+    //  كل التحسينات البصرية والوظيفية في ملف واحد
+    //  يعمل على GitHub Pages وكل المتصفحات
+    // ================================================================
+
+    // ---- الكانفاس الرئيسي ----
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const miniCanvas = document.getElementById('minimapCanvas');
+    const miniCtx = miniCanvas.getContext('2d');
+    let W, H, MW, MH;
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      MW = miniCanvas.width = miniCanvas.clientWidth || 140;
+      MH = miniCanvas.height = miniCanvas.clientHeight || 140;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // ---- الممالك ----
+    const KINGDOMS = {
+      north: { name: 'الشمال', color: '#3a8aff', dark: '#1a4a7a', emoji: '❄️', enemy: false },
+      south: { name: 'الجنوب', color: '#ff6a3a', dark: '#7a2a1a', emoji: '🔥', enemy: true },
+      east: { name: 'الشرق', color: '#3aff6a', dark: '#1a7a3a', emoji: '🌿', enemy: true },
+      west: { name: 'الغرب', color: '#ffdd3a', dark: '#7a6a1a', emoji: '⚡', enemy: true }
+    };
+    const KINGDOM_KEYS = ['north', 'south', 'east', 'west'];
+    const POSITIONS = {
+      north: { x: 1000, y: 1000 },
+      south: { x: 3000, y: 3000 },
+      east: { x: 3000, y: 1000 },
+      west: { x: 1000, y: 3000 }
+    };
+
+    // ---- إعدادات الوحدات ----
+    const UNIT_TYPES = {
+      worker: { hp: 50, speed: 60, radius: 14, attack: 0, defense: 0, range: 0, attackSpeed: 0, cost: { wood: 15, food: 10 },
+        label: 'عامل', icon: '👷' },
+      infantry: { hp: 85, speed: 45, radius: 16, attack: 15, defense: 4, range: 28, attackSpeed: 1.2, cost: { wood: 20,
+          food: 20, iron: 10 }, label: 'مشاة', icon: '⚔️' },
+      archer: { hp: 60, speed: 42, radius: 14, attack: 13, defense: 2, range: 85, attackSpeed: 1.5, cost: { wood: 30, food: 15,
+          iron: 5 }, label: 'رامي', icon: '🏹' },
+      cavalry: { hp: 120, speed: 88, radius: 19, attack: 20, defense: 5, range: 22, attackSpeed: 1.0, cost: { wood: 30,
+          food: 30, iron: 20 }, label: 'فارس', icon: '🐴' },
+      cannon: { hp: 160, speed: 26, radius: 24, attack: 50, defense: 3, range: 160, attackSpeed: 2.8, cost: { wood: 70,
+          food: 40, iron: 35, stone: 20 }, label: 'مدفع', icon: '💥' }
+    };
+
+    // ---- إعدادات المباني ----
+    const BUILDING_TYPES = {
+      house: { hp: 220, cost: { wood: 30, stone: 20 }, label: 'منزل', icon: '🏠', radius: 28 },
+      barracks: { hp: 380, cost: { wood: 50, stone: 30, iron: 15 }, label: 'ثكنة', icon: '🏛️', radius: 32 },
+      mine: { hp: 200, cost: { wood: 30, stone: 25, iron: 5 }, label: 'منجم', icon: '⛏️', radius: 30 },
+      tower: { hp: 320, cost: { wood: 40, stone: 40, iron: 10 }, label: 'برج', icon: '🗼', radius: 28 },
+      towncenter: { hp: 550, cost: { wood: 100, stone: 80 }, label: 'مركز المدينة', icon: '🏛️', radius: 36 }
+    };
+
+    // ---- الكاميرا ----
+    let camera = { x: 0, y: 0 };
+    let zoom = 1.2;
+    let isDragging = false;
+    let dragStartX = 0,
+      dragStartY = 0;
+    let camStartX = 0,
+      camStartY = 0;
+
+    // ---- التحديد ----
+    let isSelecting = false;
+    let selStartX = 0,
+      selStartY = 0;
+    let selEndX = 0,
+      selEndY = 0;
+    let selectedUnits = [];
+    let tapX = 0,
+      tapY = 0,
+      tapTime = 0;
+    let tapCount = 0;
+    let lastTapTime = 0;
+
+    // ---- المتغيرات العامة ----
+    let resources = {};
+    let entities = [];
+    let buildings = [];
+    let nextId = 1;
+    let lastTime = 0;
+    let aiTimer = 0;
+    const MAP_SIZE = 4000;
+    const TERRAIN = [];
+
+    // ---- دوال مساعدة ----
+    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+    function distance(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+    function screenToWorld(sx, sy) {
+      return { x: camera.x + sx / zoom, y: camera.y + sy / zoom };
+    }
+
+    function worldToScreen(wx, wy) {
+      return { x: (wx - camera.x) * zoom, y: (wy - camera.y) * zoom };
+    }
+
+    // ---- التضاريس ----
+    function generateTerrain() {
+      const step = 40;
+      const cols = Math.ceil(MAP_SIZE / step);
+      const rows = Math.ceil(MAP_SIZE / step);
+      for (let y = 0; y < rows; y++) {
+        TERRAIN[y] = [];
+        for (let x = 0; x < cols; x++) {
+          const val = Math.sin(x * 0.05) * Math.cos(y * 0.07) * 0.5 +
+            Math.sin(x * 0.12 + y * 0.08) * 0.3 +
+            Math.random() * 0.2;
+          let type = 'grass';
+          if (val > 0.7) type = 'mountain';
+          else if (val > 0.4) type = 'hill';
+          else if (val < -0.3) type = 'water';
+          else if (val < -0.1) type = 'sand';
+          else if (Math.random() < 0.08) type = 'forest';
+          TERRAIN[y][x] = type;
+        }
+      }
+    }
+
+    function getTerrainColor(type) {
+      const colors = {
+        grass: '#2d5a2d',
+        hill: '#4a7a3a',
+        mountain: '#6a5a4a',
+        water: '#1a3a5a',
+        sand: '#8a8a5a',
+        forest: '#1a4a1a'
+      };
+      return colors[type] || '#2d5a2d';
+    }
+
+    // ---- إنشاء الكيانات ----
+    function createUnit(type, x, y, kingdom) {
+      const def = UNIT_TYPES[type];
+      if (!def) return null;
+      const population = entities.filter(e => e.kind === 'unit' && e.kingdom === kingdom).length;
+      const limit = 10 + buildings.filter(b => b.buildingType === 'house' && b.kingdom === kingdom && b.isConstructed).length *
+        5;
+      if (kingdom === 'north' && population >= limit) return null;
+      return {
+        id: nextId++,
+        kind: 'unit',
+        type,
+        x,
+        y,
+        kingdom,
+        hp: def.hp,
+        maxHp: def.hp,
+        speed: def.speed,
+        radius: def.radius,
+        attack: def.attack,
+        defense: def.defense,
+        range: def.range,
+        attackSpeed: def.attackSpeed,
+        attackTimer: 0,
+        state: 'idle',
+        target: null,
+        targetX: null,
+        targetY: null,
+        gatherType: null,
+        gatherTimer: 0,
+        buildingTarget: null,
+        label: def.label,
+        icon: def.icon,
+        angle: 0
+      };
+    }
+
+    function createResource(x, y, type, amount) {
+      const icons = { wood: '🌲', food: '🌾', stone: '🪨', iron: '⛏️', gold: '💰' };
+      const colors = { wood: '#3a8a3a', food: '#8a8a3a', stone: '#7a7a7a', iron: '#8a6a4a', gold: '#ffaa00' };
+      return {
+        id: nextId++,
+        kind: 'resource',
+        resourceType: type,
+        x,
+        y,
+        amount,
+        maxAmount: amount,
+        radius: 20,
+        icon: icons[type] || '❓',
+        color: colors[type] || '#888'
+      };
+    }
+
+    function createBuilding(type, x, y, kingdom) {
+      const def = BUILDING_TYPES[type];
+      if (!def) return null;
+      return {
+        id: nextId++,
+        kind: 'building',
+        buildingType: type,
+        x,
+        y,
+        kingdom,
+        hp: def.hp,
+        maxHp: def.hp,
+        radius: def.radius,
+        label: def.label,
+        icon: def.icon,
+        isConstructed: false,
+        constructionProgress: 0,
+        constructionTime: 5
+      };
+    }
+
+    // ---- تهيئة اللعبة ----
+    function initResources() {
+      for (const k of KINGDOM_KEYS) {
+        resources[k] = { wood: 150, food: 120, stone: 80, iron: 40, gold: 10 };
+      }
+    }
+
+    function generateResources() {
+      const types = ['wood', 'food', 'stone', 'iron', 'gold'];
+      for (let i = 0; i < 250; i++) {
+        const type = types[Math.floor(Math.random() * types.length)];
+        const x = 80 + Math.random() * (MAP_SIZE - 160);
+        const y = 80 + Math.random() * (MAP_SIZE - 160);
+        const amount = type === 'gold' ? 15 + Math.random() * 25 : 40 + Math.random() * 120;
+        entities.push(createResource(x, y, type, amount));
+      }
+    }
+
+    function initKingdoms() {
+      for (const k of KINGDOM_KEYS) {
+        const pos = POSITIONS[k];
+        const tc = createBuilding('towncenter', pos.x, pos.y, k);
+        tc.isConstructed = true;
+        tc.constructionProgress = 1;
+        entities.push(tc);
+        buildings.push(tc);
+        for (let i = 0; i < 4; i++) {
+          const w = createUnit('worker', pos.x + (i - 1.5) * 50, pos.y - 30 + i * 15, k);
+          if (w) entities.push(w);
+        }
+        if (k !== 'north') {
+          for (let i = 0; i < 3; i++) {
+            const u = createUnit('infantry', pos.x + (Math.random() - 0.5) * 140, pos.y + (Math.random() - 0.5) * 140, k);
+            if (u) entities.push(u);
+          }
+        }
+      }
+      camera.x = POSITIONS.north.x - W / 2 / zoom;
+      camera.y = POSITIONS.north.y - H / 2 / zoom;
+    }
+
+    // ---- دوال البحث والذكاء ----
+    function findNearestResource(x, y, type, kingdom) {
+      let best = null,
+        bestDist = Infinity;
+      for (const e of entities) {
+        if (e.kind !== 'resource' || e.resourceType !== type || e.amount <= 0) continue;
+        const d = (e.x - x) ** 2 + (e.y - y) ** 2;
+        if (d < bestDist) { bestDist = d;
+          best = e; }
+      }
+      return best;
+    }
+
+    function assignWorker(worker, type) {
+      const target = findNearestResource(worker.x, worker.y, type, worker.kingdom);
+      if (!target) return false;
+      worker.state = 'gathering';
+      worker.target = target;
+      worker.gatherType = type;
+      worker.gatherTimer = 0;
+      return true;
+    }
+
+    function commandAttack(units, tx, ty) {
+      let bestEnemy = null,
+        bestDist = Infinity;
+      for (const e of entities) {
+        if (e.kingdom === 'north' || e.kind === 'resource' || e.hp <= 0) continue;
+        const d = (e.x - tx) ** 2 + (e.y - ty) ** 2;
+        if (d < bestDist && d < 900 * 900) { bestDist = d;
+          bestEnemy = e; }
+      }
+      for (const u of units) {
+        if (u.attack <= 0 || u.kind !== 'unit') continue;
+        if (bestEnemy) { u.state = 'attacking';
+          u.target = bestEnemy; } else {
+          u.state = 'moving';
+          u.targetX = tx + (Math.random() - 0.5) * 100;
+          u.targetY = ty + (Math.random() - 0.5) * 100;
+          u.target = null;
+        }
+      }
+    }
+
+    function commandStop(units) {
+      for (const u of units) {
+        if (u.kind !== 'unit') continue;
+        u.state = 'idle';
+        u.target = null;
+        u.targetX = null;
+        u.targetY = null;
+      }
+    }
+
+    // ---- تحديث العمال ----
+    function updateWorker(worker, dt) {
+      if (worker.state === 'idle') {
+        const types = ['wood', 'food', 'stone', 'iron'];
+        const chosen = types[Math.floor(Math.random() * types.length)];
+        if (!assignWorker(worker, chosen)) {
+          worker.x += (Math.random() - 0.5) * 30;
+          worker.y += (Math.random() - 0.5) * 30;
+        }
+        return;
+      }
+      if (worker.state === 'gathering') {
+        let target = worker.target;
+        if (!target || target.amount <= 0) {
+          target = findNearestResource(worker.x, worker.y, worker.gatherType, worker.kingdom);
+          worker.target = target;
+          if (!target) { worker.state = 'idle'; return; }
+        }
+        const dx = target.x - worker.x,
+          dy = target.y - worker.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist > 22) {
+          const move = worker.speed * dt;
+          worker.x += (dx / dist) * move;
+          worker.y += (dy / dist) * move;
+          worker.angle = Math.atan2(dy, dx);
+        } else {
+          worker.gatherTimer += dt;
+          if (worker.gatherTimer >= 0.4) {
+            worker.gatherTimer = 0;
+            const amount = Math.min(5, target.amount);
+            target.amount -= amount;
+            const res = resources[worker.kingdom];
+            if (worker.gatherType === 'wood') res.wood += amount;
+            else if (worker.gatherType === 'food') res.food += amount;
+            else if (worker.gatherType === 'stone') res.stone += amount;
+            else if (worker.gatherType === 'iron') res.iron += amount;
+            else if (worker.gatherType === 'gold') res.gold += amount;
+            if (target.amount <= 0) {
+              const nt = findNearestResource(worker.x, worker.y, worker.gatherType, worker.kingdom);
+              worker.target = nt || null;
+              if (!worker.target) worker.state = 'idle';
+            }
+          }
+        }
+        return;
+      }
+      if (worker.state === 'building') {
+        const b = worker.buildingTarget;
+        if (!b || b.isConstructed) { worker.state = 'idle'; return; }
+        const dx = b.x - worker.x,
+          dy = b.y - worker.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist > 30) {
+          const move = worker.speed * dt;
+          worker.x += (dx / dist) * move;
+          worker.y += (dy / dist) * move;
+        } else {
+          b.constructionProgress += dt / b.constructionTime;
+          if (b.constructionProgress >= 1) {
+            b.isConstructed = true;
+            b.constructionProgress = 1;
+            worker.state = 'idle';
+            worker.buildingTarget = null;
+          }
+        }
+        return;
+      }
+    }
+
+    // ---- تحديث الوحدات القتالية ----
+    function updateMilitary(unit, dt) {
+      if (unit.state === 'moving' && unit.targetX !== null && unit.targetY !== null) {
+        const dx = unit.targetX - unit.x,
+          dy = unit.targetY - unit.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist > 4) {
+          const move = unit.speed * dt;
+          unit.x += (dx / dist) * move;
+          unit.y += (dy / dist) * move;
+          unit.angle = Math.atan2(dy, dx);
+        } else {
+          unit.state = 'idle';
+  
