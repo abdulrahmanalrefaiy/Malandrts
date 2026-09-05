@@ -3,1035 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MALAND RTS - المرحلة الثانية المحسّنة</title>
+  <title>MALAND RTS - لعبة استراتيجية زمن حقيقي</title>
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/login.css">
+  <link rel="stylesheet" href="assets/css/lobby.css">
+  
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
     body {
-      background: #0a120a;
+      position: fixed;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
-      touch-action: none;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      position: fixed;
-      width: 100%;
-      height: 100%;
     }
-    canvas {
-      display: block;
-      touch-action: none;
-    }
-    #gameCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-    }
-    #minimapCanvas {
-      position: fixed;
-      bottom: 90px;
-      right: 10px;
-      z-index: 25;
-      width: 140px;
-      height: 140px;
-      border: 2px solid #d0ae50;
-      border-radius: 12px;
-      background: #0a1a0a;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.7);
-      cursor: pointer;
-    }
-
-    /* ---- واجهة علوية ---- */
-    #topUI {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      right: 10px;
-      z-index: 20;
-      display: flex;
-      justify-content: space-between;
-      pointer-events: none;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .panel {
-      background: rgba(0, 0, 0, 0.78);
-      backdrop-filter: blur(6px);
-      border: 1px solid #4a8a4a;
-      border-radius: 12px;
-      padding: 8px 14px;
-      color: #eee;
-      font-size: 13px;
-      pointer-events: none;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    }
-    #selectedInfo {
-      color: #ffdd44;
-      text-align: right;
-      max-width: 200px;
-      font-size: 12px;
-    }
-
-    /* ---- شريط الموارد ---- */
-    #resourceBar {
-      position: fixed;
-      top: 62px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 20;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 6px;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(6px);
-      padding: 6px 14px;
-      border-radius: 14px;
-      border: 1px solid #3a7a3a;
-      pointer-events: none;
-    }
-    .resItem {
-      color: #ddd;
-      font-size: 12px;
-      background: #1a2a1a;
-      padding: 3px 10px;
-      border-radius: 8px;
-      border: 1px solid #2a5a2a;
-      white-space: nowrap;
-    }
-    .resItem b {
-      color: #ffdd44;
-      font-weight: bold;
-    }
-
-    /* ---- شريط الأزرار السفلي ---- */
-    #bottomBar {
-      position: fixed;
-      bottom: 12px;
-      left: 6px;
-      right: 6px;
-      z-index: 20;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 4px;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(8px);
-      padding: 8px 6px;
-      border-radius: 16px;
-      border: 1px solid #4a7a4a;
-    }
-    #bottomBar button {
-      background: linear-gradient(145deg, #1e3c1e, #122812);
-      border: 1px solid #4a8a4a;
-      color: #fff;
-      padding: 6px 10px;
-      border-radius: 10px;
-      font-size: 11px;
-      font-weight: 500;
-      cursor: pointer;
-      touch-action: manipulation;
-      min-width: 38px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-      transition: 0.08s;
-      border-bottom: 2px solid #2a5a2a;
-      pointer-events: auto;
-    }
-    #bottomBar button:active {
-      background: #3a7a3a;
-      transform: scale(0.93);
-      border-bottom-color: #6aaa6a;
-    }
-
-    #hint {
-      position: fixed;
-      bottom: 90px;
-      left: 10px;
-      z-index: 15;
-      color: #aaccaa;
-      font-size: 10px;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(4px);
-      padding: 5px 10px;
-      border-radius: 8px;
-      max-width: 160px;
-      line-height: 1.4;
-      pointer-events: none;
-    }
-
-    @media (max-width: 600px) {
-      .panel { font-size: 11px; padding: 5px 10px; }
-      #selectedInfo { font-size: 10px; max-width: 130px; }
-      .resItem { font-size: 10px; padding: 2px 6px; }
-      #bottomBar button { font-size: 9px; padding: 4px 6px; min-width: 30px; }
-      #minimapCanvas { width: 100px; height: 100px; bottom: 80px; right: 6px; }
-      #hint { font-size: 8px; bottom: 80px; left: 5px; max-width: 110px; padding: 3px 6px; }
-      #resourceBar { top: 56px; padding: 4px 8px; gap: 3px; }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
+  <!-- Main App Container -->
+  <div id="app"></div>
 
-  <div id="topUI">
-    <div class="panel">⚔️ MALAND · المرحلة الثانية<br><small>❄️ مملكة الشمال</small></div>
-    <div class="panel" id="selectedInfo">👆 اختر وحدة</div>
-  </div>
+  <!-- Scripts -->
+  <script type="module">
+    import { Logger, Storage } from './assets/js/utils/helpers.js';
+    import { authManager } from './assets/js/auth/auth.js';
+    import { LoginUI } from './assets/js/ui/login.js';
+    import { LobbyUI } from './assets/js/ui/lobby.js';
 
-  <div id="resourceBar">
-    <span class="resItem">🪵 <b id="woodDisplay">0</b></span>
-    <span class="resItem">🌾 <b id="foodDisplay">0</b></span>
-    <span class="resItem">🪨 <b id="stoneDisplay">0</b></span>
-    <span class="resItem">⛏️ <b id="ironDisplay">0</b></span>
-    <span class="resItem">💰 <b id="goldDisplay">0</b></span>
-    <span class="resItem">🏠 <b id="popDisplay">0</b>/<b id="popMaxDisplay">0</b></span>
-  </div>
-
-  <div id="hint">🖐️ سحب: تحديد · نقرة: اختيار · ضغط مطول: أوامر</div>
-
-  <div id="bottomBar">
-    <button id="btnWorker">👷 عامل</button>
-    <button id="btnInfantry">⚔️ مشاة</button>
-    <button id="btnArcher">🏹 رامي</button>
-    <button id="btnCavalry">🐴 فارس</button>
-    <button id="btnCannon">💥 مدفع</button>
-    <button id="btnHouse">🏠 منزل</button>
-    <button id="btnBarracks">🏛️ ثكنة</button>
-    <button id="btnMine">⛏️ منجم</button>
-    <button id="btnTower">🗼 برج</button>
-    <button id="btnAttack">⚡ هجوم</button>
-    <button id="btnStop">⏹️ وقف</button>
-  </div>
-
-  <canvas id="gameCanvas"></canvas>
-  <canvas id="minimapCanvas"></canvas>
-
-  <script>
-    // ================================================================
-    //  MALAND RTS - المرحلة الثانية المحسّنة
-    //  نسخة محسّنة وسريعة مع رسومات أساسية
-    // ================================================================
-
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    const miniCanvas = document.getElementById('minimapCanvas');
-    const miniCtx = miniCanvas.getContext('2d');
-    
-    let W, H, MW, MH;
-
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-      MW = miniCanvas.width = 140;
-      MH = miniCanvas.height = 140;
-    }
-    
-    window.addEventListener('resize', resize);
-    resize();
-
-    // ---- إعدادات الممالك ----
-    const KINGDOMS = {
-      north: { name: 'الشمال', color: '#3a8aff', dark: '#1a4a7a', emoji: '❄️' },
-      south: { name: 'الجنوب', color: '#ff6a3a', dark: '#7a2a1a', emoji: '🔥' },
-      east: { name: 'الشرق', color: '#3aff6a', dark: '#1a7a3a', emoji: '🌿' },
-      west: { name: 'الغرب', color: '#ffdd3a', dark: '#7a6a1a', emoji: '⚡' }
-    };
-
-    const POSITIONS = {
-      north: { x: 1000, y: 1000 },
-      south: { x: 3000, y: 3000 },
-      east: { x: 3000, y: 1000 },
-      west: { x: 1000, y: 3000 }
-    };
-
-    // ---- إعدادات الوحدات ----
-    const UNIT_TYPES = {
-      worker: { hp: 50, speed: 60, radius: 14, attack: 0, defense: 0, range: 0, attackSpeed: 0, cost: { wood: 15, food: 10 }, label: 'عامل', icon: '👷' },
-      infantry: { hp: 85, speed: 45, radius: 16, attack: 15, defense: 4, range: 28, attackSpeed: 1.2, cost: { wood: 20, food: 20, iron: 10 }, label: 'مشاة', icon: '⚔️' },
-      archer: { hp: 60, speed: 42, radius: 14, attack: 13, defense: 2, range: 85, attackSpeed: 1.5, cost: { wood: 30, food: 15, iron: 5 }, label: 'رامي', icon: '🏹' },
-      cavalry: { hp: 120, speed: 88, radius: 19, attack: 20, defense: 5, range: 22, attackSpeed: 1.0, cost: { wood: 30, food: 30, iron: 20 }, label: 'فارس', icon: '🐴' },
-      cannon: { hp: 160, speed: 26, radius: 24, attack: 50, defense: 3, range: 160, attackSpeed: 2.8, cost: { wood: 70, food: 40, iron: 35, stone: 20 }, label: 'مدفع', icon: '💥' }
-    };
-
-    const BUILDING_TYPES = {
-      house: { hp: 220, cost: { wood: 30, stone: 20 }, label: 'منزل', icon: '🏠', radius: 28 },
-      barracks: { hp: 380, cost: { wood: 50, stone: 30, iron: 15 }, label: 'ثكنة', icon: '🏛️', radius: 32 },
-      mine: { hp: 200, cost: { wood: 30, stone: 25, iron: 5 }, label: 'منجم', icon: '⛏️', radius: 30 },
-      tower: { hp: 320, cost: { wood: 40, stone: 40, iron: 10 }, label: 'برج', icon: '🗼', radius: 28 },
-      towncenter: { hp: 550, cost: { wood: 100, stone: 80 }, label: 'مركز', icon: '🏛️', radius: 36 }
-    };
-
-    // ---- متغيرات اللعبة ----
-    let camera = { x: 0, y: 0 };
-    let zoom = 1.2;
-    let isDragging = false;
-    let dragStartX = 0, dragStartY = 0;
-    let camStartX = 0, camStartY = 0;
-
-    let isSelecting = false;
-    let selStartX = 0, selStartY = 0;
-    let selEndX = 0, selEndY = 0;
-    let selectedUnits = [];
-
-    let resources = {};
-    let entities = [];
-    let buildings = [];
-    let nextId = 1;
-    let lastTime = 0;
-    let aiTimer = 0;
-    const MAP_SIZE = 4000;
-    const TERRAIN = [];
-    let effects = [];
-
-    // ---- دوال مساعدة ----
-    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
-    function distance(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
-    function screenToWorld(sx, sy) { return { x: camera.x + sx / zoom, y: camera.y + sy / zoom }; }
-    function worldToScreen(wx, wy) { return { x: (wx - camera.x) * zoom, y: (wy - camera.y) * zoom }; }
-
-    // ---- التضاريس مع تفاصيل ----
-    function generateTerrain() {
-      const step = 40;
-      const cols = Math.ceil(MAP_SIZE / step);
-      const rows = Math.ceil(MAP_SIZE / step);
-      for (let y = 0; y < rows; y++) {
-        TERRAIN[y] = [];
-        for (let x = 0; x < cols; x++) {
-          const val = Math.sin(x * 0.05) * Math.cos(y * 0.07) * 0.5 + Math.sin(x * 0.12 + y * 0.08) * 0.3 + Math.random() * 0.2;
-          let type = 'grass';
-          if (val > 0.7) type = 'mountain';
-          else if (val > 0.4) type = 'hill';
-          else if (val < -0.3) type = 'water';
-          else if (val < -0.1) type = 'sand';
-          else if (Math.random() < 0.08) type = 'forest';
-          TERRAIN[y][x] = type;
-        }
+    // ====== App Manager ======
+    class App {
+      constructor() {
+        this.currentScreen = null;
+        this.loginUI = null;
+        this.lobbyUI = null;
+        this.init();
       }
-    }
 
-    function drawTerrain(x, y, type) {
-      const colors = {
-        grass: { main: '#2d5a2d', detail: '#1d4a1d' },
-        hill: { main: '#4a7a3a', detail: '#3a6a2a' },
-        mountain: { main: '#6a5a4a', detail: '#5a4a3a' },
-        water: { main: '#1a3a5a', detail: '#0a2a4a' },
-        sand: { main: '#8a8a5a', detail: '#7a7a4a' },
-        forest: { main: '#1a4a1a', detail: '#0a3a0a' }
-      };
-      const c = colors[type] || colors.grass;
-      ctx.fillStyle = c.main;
-      ctx.fillRect(x, y, 40, 40);
-      
-      // تفاصيل صغيرة
-      ctx.fillStyle = c.detail;
-      ctx.fillRect(x + 5, y + 5, 8, 8);
-      ctx.fillRect(x + 28, y + 28, 8, 8);
-    }
-
-    // ---- إنشاء الكيانات ----
-    function createUnit(type, x, y, kingdom) {
-      const def = UNIT_TYPES[type];
-      if (!def) return null;
-      const population = entities.filter(e => e.kind === 'unit' && e.kingdom === kingdom).length;
-      const limit = 10 + buildings.filter(b => b.buildingType === 'house' && b.kingdom === kingdom && b.isConstructed).length * 5;
-      if (kingdom === 'north' && population >= limit) return null;
-      return {
-        id: nextId++,
-        kind: 'unit',
-        type,
-        x,
-        y,
-        kingdom,
-        hp: def.hp,
-        maxHp: def.hp,
-        speed: def.speed,
-        radius: def.radius,
-        attack: def.attack,
-        defense: def.defense,
-        range: def.range,
-        attackSpeed: def.attackSpeed,
-        attackTimer: 0,
-        state: 'idle',
-        target: null,
-        targetX: null,
-        targetY: null,
-        gatherType: null,
-        gatherTimer: 0,
-        buildingTarget: null,
-        label: def.label,
-        icon: def.icon,
-        angle: 0,
-        damageFlash: 0
-      };
-    }
-
-    function createResource(x, y, type, amount) {
-      const icons = { wood: '🌲', food: '🌾', stone: '🪨', iron: '⛏️', gold: '💰' };
-      const colors = { wood: '#3a8a3a', food: '#8a8a3a', stone: '#7a7a7a', iron: '#8a6a4a', gold: '#ffaa00' };
-      return {
-        id: nextId++,
-        kind: 'resource',
-        resourceType: type,
-        x,
-        y,
-        amount,
-        maxAmount: amount,
-        radius: 20,
-        icon: icons[type] || '❓',
-        color: colors[type] || '#888'
-      };
-    }
-
-    function createBuilding(type, x, y, kingdom) {
-      const def = BUILDING_TYPES[type];
-      if (!def) return null;
-      return {
-        id: nextId++,
-        kind: 'building',
-        buildingType: type,
-        x,
-        y,
-        kingdom,
-        hp: def.hp,
-        maxHp: def.hp,
-        radius: def.radius,
-        label: def.label,
-        icon: def.icon,
-        isConstructed: false,
-        constructionProgress: 0,
-        constructionTime: 5,
-        damageFlash: 0
-      };
-    }
-
-    // ---- تهيئة ----
-    function initResources() {
-      for (const k of ['north', 'south', 'east', 'west']) {
-        resources[k] = { wood: 150, food: 120, stone: 80, iron: 40, gold: 10 };
-      }
-    }
-
-    function generateResources() {
-      const types = ['wood', 'food', 'stone', 'iron', 'gold'];
-      for (let i = 0; i < 250; i++) {
-        const type = types[Math.floor(Math.random() * types.length)];
-        const x = 80 + Math.random() * (MAP_SIZE - 160);
-        const y = 80 + Math.random() * (MAP_SIZE - 160);
-        const amount = type === 'gold' ? 15 + Math.random() * 25 : 40 + Math.random() * 120;
-        entities.push(createResource(x, y, type, amount));
-      }
-    }
-
-    function initKingdoms() {
-      for (const k of ['north', 'south', 'east', 'west']) {
-        const pos = POSITIONS[k];
-        const tc = createBuilding('towncenter', pos.x, pos.y, k);
-        tc.isConstructed = true;
-        tc.constructionProgress = 1;
-        entities.push(tc);
-        buildings.push(tc);
+      async init() {
+        Logger.log('🎮 MALAND RTS initializing...');
         
-        for (let i = 0; i < 4; i++) {
-          const w = createUnit('worker', pos.x + (i - 1.5) * 50, pos.y - 30 + i * 15, k);
-          if (w) entities.push(w);
+        // Check if user is already logged in
+        if (authManager.isLoggedIn()) {
+          this.showLobby();
+        } else {
+          this.showLogin();
         }
         
-        if (k !== 'north') {
-          for (let i = 0; i < 3; i++) {
-            const u = createUnit('infantry', pos.x + (Math.random() - 0.5) * 140, pos.y + (Math.random() - 0.5) * 140, k);
-            if (u) entities.push(u);
-          }
-        }
+        // Listen to auth events
+        authManager.on('login', (user) => this.onLogin(user));
+        authManager.on('logout', () => this.showLogin());
       }
-      camera.x = POSITIONS.north.x - W / 2 / zoom;
-      camera.y = POSITIONS.north.y - H / 2 / zoom;
-    }
 
-    // ---- رسم الوحدات ----
-    function drawUnit(unit, sx, sy) {
-      const size = unit.radius * 2 * zoom;
-      const colors = KINGDOMS[unit.kingdom];
-      
-      // الجسم الرئيسي
-      const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, size/2);
-      grad.addColorStop(0, colors.color);
-      grad.addColorStop(1, colors.dark);
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(sx, sy, size/2, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // حدود
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      
-      // الأيقونة (emoji)
-      ctx.font = `${Math.max(8, size * 0.6)}px Arial`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#fff';
-      ctx.fillText(unit.icon, sx, sy);
-      
-      // شريط الصحة
-      if (unit.hp < unit.maxHp) {
-        const barW = size * 0.8;
-        const barH = 2;
-        ctx.fillStyle = '#333';
-        ctx.fillRect(sx - barW/2, sy + size/2 + 2, barW, barH);
-        ctx.fillStyle = unit.hp / unit.maxHp > 0.5 ? '#4a8a4a' : '#ff4a4a';
-        ctx.fillRect(sx - barW/2, sy + size/2 + 2, barW * (unit.hp / unit.maxHp), barH);
+      showLogin() {
+        Logger.log('📝 Showing login screen');
+        this.currentScreen = 'login';
+        this.loginUI = new LoginUI();
+        this.loginUI.render();
+        this.loginUI.on('loginSuccess', (user) => this.onLogin(user));
       }
-      
-      // دائرة اختيار
-      if (selectedUnits.includes(unit)) {
-        ctx.strokeStyle = '#ffdd44';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(sx, sy, size/2 + 3, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-    }
 
-    // ---- رسم المباني ----
-    function drawBuilding(building, sx, sy) {
-      const size = building.radius * 2 * zoom;
-      const colors = KINGDOMS[building.kingdom];
-      
-      // الأساس
-      const grad = ctx.createLinearGradient(sx - size/2, sy - size/2, sx + size/2, sy + size/2);
-      grad.addColorStop(0, colors.color);
-      grad.addColorStop(1, colors.dark);
-      ctx.fillStyle = grad;
-      ctx.fillRect(sx - size/2, sy - size/2, size, size);
-      
-      // حدود
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(sx - size/2, sy - size/2, size, size);
-      
-      // السقف
-      ctx.fillStyle = '#8a4a2a';
-      ctx.beginPath();
-      ctx.moveTo(sx - size/2, sy - size/2);
-      ctx.lineTo(sx + size/2, sy - size/2);
-      ctx.lineTo(sx, sy - size);
-      ctx.closePath();
-      ctx.fill();
-      
-      // الأيقونة
-      ctx.font = `${Math.max(10, size * 0.5)}px Arial`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#fff';
-      ctx.fillText(building.icon, sx, sy);
-      
-      // شريط البناء
-      if (!building.isConstructed) {
-        const barW = size * 0.8;
-        const barH = 3;
-        ctx.fillStyle = '#333';
-        ctx.fillRect(sx - barW/2, sy + size/2 + 4, barW, barH);
-        ctx.fillStyle = '#ffaa00';
-        ctx.fillRect(sx - barW/2, sy + size/2 + 4, barW * building.constructionProgress, barH);
-      }
-      
-      // شريط الصحة
-      if (building.hp < building.maxHp && building.isConstructed) {
-        const barW = size * 0.8;
-        const barH = 2;
-        ctx.fillStyle = '#333';
-        ctx.fillRect(sx - barW/2, sy + size/2 + 2, barW, barH);
-        ctx.fillStyle = building.hp / building.maxHp > 0.5 ? '#4a8a4a' : '#ff4a4a';
-        ctx.fillRect(sx - barW/2, sy + size/2 + 2, barW * (building.hp / building.maxHp), barH);
-      }
-    }
-
-    // ---- الخريطة الصغيرة ----
-    function drawMinimap() {
-      miniCtx.fillStyle = '#0a1a0a';
-      miniCtx.fillRect(0, 0, MW, MH);
-      miniCtx.strokeStyle = '#4a7a4a';
-      miniCtx.lineWidth = 1;
-      miniCtx.strokeRect(0, 0, MW, MH);
-      
-      const scale = MW / MAP_SIZE;
-      
-      // الممالك
-      for (const k of ['north', 'south', 'east', 'west']) {
-        const pos = POSITIONS[k];
-        const mx = pos.x * scale;
-        const my = pos.y * scale;
-        miniCtx.fillStyle = KINGDOMS[k].color;
-        miniCtx.fillRect(mx - 3, my - 3, 6, 6);
-      }
-      
-      // الوحدات
-      for (const e of entities) {
-        if (e.kind !== 'unit') continue;
-        const mx = e.x * scale;
-        const my = e.y * scale;
-        miniCtx.fillStyle = KINGDOMS[e.kingdom].color;
-        miniCtx.fillRect(mx - 1, my - 1, 2, 2);
-      }
-      
-      // منطقة الرؤية
-      const vx = camera.x * scale;
-      const vy = camera.y * scale;
-      const vw = (W / zoom) * scale;
-      const vh = (H / zoom) * scale;
-      miniCtx.strokeStyle = '#ffdd44';
-      miniCtx.lineWidth = 1;
-      miniCtx.strokeRect(vx, vy, vw, vh);
-    }
-
-    // ---- تحديث الوحدات ----
-    function updateWorker(worker, dt) {
-      if (worker.state === 'idle') {
-        const types = ['wood', 'food', 'stone', 'iron'];
-        const chosen = types[Math.floor(Math.random() * types.length)];
-        const target = entities.find(e => e.kind === 'resource' && e.resourceType === chosen && e.amount > 0);
-        if (target) {
-          worker.state = 'gathering';
-          worker.target = target;
-          worker.gatherType = chosen;
-        }
-        return;
-      }
-      
-      if (worker.state === 'gathering') {
-        if (!worker.target || worker.target.amount <= 0) {
-          worker.state = 'idle';
-          return;
-        }
-        const dx = worker.target.x - worker.x, dy = worker.target.y - worker.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist > 22) {
-          const move = worker.speed * dt;
-          worker.x += (dx / dist) * move;
-          worker.y += (dy / dist) * move;
-          worker.angle = Math.atan2(dy, dx);
-        } else {
-          worker.gatherTimer += dt;
-          if (worker.gatherTimer >= 0.4) {
-            worker.gatherTimer = 0;
-            const amount = Math.min(5, worker.target.amount);
-            worker.target.amount -= amount;
-            resources[worker.kingdom][worker.gatherType] += amount;
-          }
-        }
-      }
-    }
-
-    function updateMilitary(unit, dt) {
-      if (unit.state === 'moving' && unit.targetX !== null) {
-        const dx = unit.targetX - unit.x, dy = unit.targetY - unit.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist > 4) {
-          const move = unit.speed * dt;
-          unit.x += (dx / dist) * move;
-          unit.y += (dy / dist) * move;
-          unit.angle = Math.atan2(dy, dx);
-        } else {
-          unit.state = 'idle';
-        }
-        return;
-      }
-      
-      if (unit.state === 'attacking' && unit.target) {
-        if (unit.target.hp <= 0) {
-          unit.state = 'idle';
-          unit.target = null;
-          return;
-        }
-        const dx = unit.target.x - unit.x, dy = unit.target.y - unit.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist > unit.range) {
-          const move = unit.speed * dt;
-          unit.x += (dx / dist) * move;
-          unit.y += (dy / dist) * move;
-          unit.angle = Math.atan2(dy, dx);
-        } else {
-          unit.angle = Math.atan2(dy, dx);
-          unit.attackTimer += dt;
-          if (unit.attackTimer >= unit.attackSpeed) {
-            unit.attackTimer = 0;
-            const damage = Math.max(2, unit.attack - (unit.target.defense || 0) + Math.random() * 4);
-            unit.target.hp -= damage;
-            unit.target.damageFlash = 0.2;
-            effects.push({ type: 'damage', x: unit.target.x, y: unit.target.y, value: Math.floor(damage), time: 0 });
-          }
-        }
-      }
-    }
-
-    function updateAI(dt) {
-      for (const k of ['south', 'east', 'west']) {
-        const res = resources[k];
-        const pos = POSITIONS[k];
-        const aiBuildings = buildings.filter(b => b.kingdom === k && b.isConstructed);
-        const aiUnits = entities.filter(e => e.kind === 'unit' && e.kingdom === k);
-        const aiMilitary = aiUnits.filter(u => u.type !== 'worker');
-        const tc = aiBuildings.find(b => b.buildingType === 'towncenter');
+      showLobby() {
+        Logger.log('🎮 Showing lobby screen');
+        this.currentScreen = 'lobby';
+        this.lobbyUI = new LobbyUI();
+        this.lobbyUI.render();
         
-        if (!tc) continue;
+        // Setup lobby listeners
+        this.lobbyUI.on('gameStart', (settings) => this.onGameStart(settings));
+        this.lobbyUI.on('cancel', () => this.showLobby());
+        this.lobbyUI.on('logout', () => this.showLogin());
+      }
 
-        if (aiBuildings.filter(b => b.buildingType === 'house').length < 6 && res.wood >= 35 && res.stone >= 25) {
-          const h = createBuilding('house', tc.x + (Math.random() - 0.5) * 300, tc.y + (Math.random() - 0.5) * 300, k);
-          if (h) {
-            h.isConstructed = true;
-            h.constructionProgress = 1;
-            entities.push(h);
-            buildings.push(h);
-            res.wood -= 30;
-            res.stone -= 20;
-          }
-        }
+      onLogin(user) {
+        Logger.success(`✅ User logged in: ${user.username}`);
+        setTimeout(() => this.showLobby(), 800);
+      }
 
-        if (aiMilitary.length < 14 && res.wood >= 25 && res.food >= 20) {
-          const u = createUnit('infantry', tc.x + (Math.random() - 0.5) * 80, tc.y + (Math.random() - 0.5) * 80, k);
-          if (u) {
-            entities.push(u);
-            res.wood -= 20;
-            res.food -= 20;
-          }
-        }
-
-        if (aiMilitary.length > 5 && Math.random() < 0.15) {
-          const targets = entities.filter(e => e.kingdom === 'north' && e.kind !== 'resource' && e.hp > 0);
-          if (targets.length > 0) {
-            const target = targets[Math.floor(Math.random() * targets.length)];
-            for (const u of aiMilitary) {
-              u.state = 'attacking';
-              u.target = target;
-            }
-          }
-        }
+      onGameStart(settings) {
+        Logger.log('🎮 Game starting with settings:', settings);
+        alert('🎮 اللعبة ستبدأ قريباً!\n' + 
+              `الخريطة: ${settings.map}\n` +
+              `عدد اللاعبين: ${settings.players.length}\n` +
+              'هذه نسخة تجريبية');
       }
     }
 
-    // ---- الرسم الرئيسي ----
-    function draw() {
-      // التضاريس
-      const startX = Math.floor(camera.x / 40) * 40;
-      const startY = Math.floor(camera.y / 40) * 40;
-      const endX = startX + Math.ceil(W / zoom / 40) * 40;
-      const endY = startY + Math.ceil(H / zoom / 40) * 40;
+    // ====== Initialize App ======
+    const app = new App();
 
-      for (let ty = startY; ty < endY; ty += 40) {
-        for (let tx = startX; tx < endX; tx += 40) {
-          const terrainY = Math.floor(ty / 40);
-          const terrainX = Math.floor(tx / 40);
-          if (TERRAIN[terrainY] && TERRAIN[terrainY][terrainX]) {
-            const screenPos = worldToScreen(tx, ty);
-            drawTerrain(screenPos.x, screenPos.y, TERRAIN[terrainY][terrainX]);
-          }
-        }
-      }
+    // Make app globally accessible
+    window.app = app;
 
-      // الموارد
-      for (const e of entities) {
-        if (e.kind === 'resource' && e.amount > 0) {
-          const pos = worldToScreen(e.x, e.y);
-          if (pos.x > -30 && pos.x < W + 30 && pos.y > -30 && pos.y < H + 30) {
-            ctx.font = `${Math.max(12, 20 * zoom)}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = e.color;
-            ctx.fillText(e.icon, pos.x, pos.y);
-            ctx.fillStyle = '#ddd';
-            ctx.font = `${Math.max(8, 10 * zoom)}px Arial`;
-            ctx.fillText(Math.floor(e.amount), pos.x, pos.y + 12 * zoom);
-          }
-        }
-      }
-
-      // المباني
-      for (const b of buildings) {
-        const pos = worldToScreen(b.x, b.y);
-        if (pos.x > -50 && pos.x < W + 50 && pos.y > -50 && pos.y < H + 50) {
-          drawBuilding(b, pos.x, pos.y);
-        }
-      }
-
-      // الوحدات
-      for (const e of entities) {
-        if (e.kind === 'unit') {
-          const pos = worldToScreen(e.x, e.y);
-          if (pos.x > -30 && pos.x < W + 30 && pos.y > -30 && pos.y < H + 30) {
-            drawUnit(e, pos.x, pos.y);
-          }
-        }
-      }
-
-      // التحديد بالسحب
-      if (isSelecting) {
-        const x = Math.min(selStartX, selEndX);
-        const y = Math.min(selStartY, selEndY);
-        const w = Math.abs(selEndX - selStartX);
-        const h = Math.abs(selEndY - selStartY);
-        ctx.strokeStyle = 'rgba(255, 221, 68, 0.5)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]);
-        ctx.strokeRect(x, y, w, h);
-        ctx.setLineDash([]);
-        ctx.fillStyle = 'rgba(255, 221, 68, 0.1)';
-        ctx.fillRect(x, y, w, h);
-      }
-
-      // المؤثرات البصرية
-      for (let i = effects.length - 1; i >= 0; i--) {
-        const e = effects[i];
-        e.time += 0.016;
-        if (e.time > 1) {
-          effects.splice(i, 1);
-          continue;
-        }
-        const pos = worldToScreen(e.x, e.y);
-        ctx.font = 'bold 16px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillStyle = `rgba(255, 68, 68, ${1 - e.time})`;
-        ctx.fillText(e.value, pos.x, pos.y - e.time * 30);
-      }
-    }
-
-    // ---- التحديث ----
-    function update(dt) {
-      // تحديث الوحدات
-      for (const e of entities) {
-        if (e.kind === 'unit') {
-          if (e.type === 'worker') updateWorker(e, dt);
-          else updateMilitary(e, dt);
-        }
-      }
-
-      // تحديث الذكاء الاصطناعي
-      aiTimer += dt;
-      if (aiTimer > 1) {
-        aiTimer = 0;
-        updateAI(dt);
-      }
-
-      // تحديث الموارد والمعلومات
-      const r = resources.north;
-      const population = entities.filter(e => e.kind === 'unit' && e.kingdom === 'north').length;
-      const limit = 10 + buildings.filter(b => b.buildingType === 'house' && b.kingdom === 'north' && b.isConstructed).length * 5;
-      
-      document.getElementById('woodDisplay').textContent = Math.floor(r.wood);
-      document.getElementById('foodDisplay').textContent = Math.floor(r.food);
-      document.getElementById('stoneDisplay').textContent = Math.floor(r.stone);
-      document.getElementById('ironDisplay').textContent = Math.floor(r.iron);
-      document.getElementById('goldDisplay').textContent = Math.floor(r.gold);
-      document.getElementById('popDisplay').textContent = population;
-      document.getElementById('popMaxDisplay').textContent = limit;
-
-      if (selectedUnits.length > 0) {
-        const types = new Set(selectedUnits.map(u => u.type));
-        const hps = selectedUnits.map(u => `${u.label}(${Math.floor(u.hp)}/${u.maxHp})`).join(', ');
-        document.getElementById('selectedInfo').textContent = `${selectedUnits.length} وحدة: ${hps}`;
-      }
-
-      // حركة الكاميرا
-      const camSpeed = 300 / zoom;
-      if (keys['ArrowUp'] || keys['w']) camera.y -= camSpeed * dt;
-      if (keys['ArrowDown'] || keys['s']) camera.y += camSpeed * dt;
-      if (keys['ArrowLeft'] || keys['a']) camera.x -= camSpeed * dt;
-      if (keys['ArrowRight'] || keys['d']) camera.x += camSpeed * dt;
-
-      camera.x = clamp(camera.x, 0, MAP_SIZE - W / zoom);
-      camera.y = clamp(camera.y, 0, MAP_SIZE - H / zoom);
-    }
-
-    // ---- حلقة اللعبة الرئيسية ----
-    function gameLoop(time) {
-      const dt = lastTime ? (time - lastTime) / 1000 : 0.016;
-      lastTime = time;
-
-      update(dt);
-      ctx.fillStyle = '#0a120a';
-      ctx.fillRect(0, 0, W, H);
-      draw();
-      drawMinimap();
-
-      requestAnimationFrame(gameLoop);
-    }
-
-    // ---- معالجة المدخلات ----
-    let keys = {};
-    window.addEventListener('keydown', (e) => { keys[e.key] = true; });
-    window.addEventListener('keyup', (e) => { keys[e.key] = false; });
-
-    canvas.addEventListener('mousedown', (e) => {
-      if (e.button === 2) {
-        isDragging = true;
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-        camStartX = camera.x;
-        camStartY = camera.y;
-      } else if (e.button === 0) {
-        isSelecting = true;
-        selStartX = e.clientX;
-        selStartY = e.clientY;
-        selEndX = e.clientX;
-        selEndY = e.clientY;
+    // ====== Keyboard Shortcuts ======
+    document.addEventListener('keydown', (e) => {
+      // Alt + L for logout (development)
+      if (e.altKey && e.key === 'l') {
+        authManager.logout();
       }
     });
 
-    canvas.addEventListener('mousemove', (e) => {
-      if (isDragging) {
-        camera.x = camStartX + (dragStartX - e.clientX) / zoom;
-        camera.y = camStartY + (dragStartY - e.clientY) / zoom;
-      } else if (isSelecting) {
-        selEndX = e.clientX;
-        selEndY = e.clientY;
-      }
-    });
-
-    canvas.addEventListener('mouseup', (e) => {
-      if (isDragging) {
-        isDragging = false;
-      } else if (isSelecting) {
-        isSelecting = false;
-        selectedUnits = [];
-        const x = Math.min(selStartX, selEndX);
-        const y = Math.min(selStartY, selEndY);
-        const w = Math.abs(selEndX - selStartX);
-        const h = Math.abs(selEndY - selStartY);
-        for (const unit of entities) {
-          if (unit.kind !== 'unit' || unit.kingdom !== 'north') continue;
-          const pos = worldToScreen(unit.x, unit.y);
-          if (pos.x > x && pos.x < x + w && pos.y > y && pos.y < y + h) {
-            selectedUnits.push(unit);
-          }
-        }
-      }
-    });
-
-    // أزرار الوحدات والمباني
-    document.getElementById('btnWorker').addEventListener('click', () => {
-      const res = resources.north;
-      if (res.wood >= 15 && res.food >= 10) {
-        const pos = POSITIONS.north;
-        const u = createUnit('worker', pos.x + (Math.random() - 0.5) * 80, pos.y + (Math.random() - 0.5) * 80, 'north');
-        if (u) {
-          entities.push(u);
-          res.wood -= 15;
-          res.food -= 10;
-        }
-      }
-    });
-
-    document.getElementById('btnInfantry').addEventListener('click', () => {
-      const res = resources.north;
-      if (res.wood >= 20 && res.food >= 20 && res.iron >= 10) {
-        const pos = POSITIONS.north;
-        const u = createUnit('infantry', pos.x + (Math.random() - 0.5) * 80, pos.y + (Math.random() - 0.5) * 80, 'north');
-        if (u) {
-          entities.push(u);
-          res.wood -= 20;
-          res.food -= 20;
-          res.iron -= 10;
-        }
-      }
-    });
-
-    document.getElementById('btnHouse').addEventListener('click', () => {
-      const res = resources.north;
-      if (res.wood >= 30 && res.stone >= 20) {
-        const pos = POSITIONS.north;
-        const b = createBuilding('house', pos.x + (Math.random() - 0.5) * 300, pos.y + (Math.random() - 0.5) * 300, 'north');
-        if (b) {
-          entities.push(b);
-          buildings.push(b);
-          res.wood -= 30;
-          res.stone -= 20;
-        }
-      }
-    });
-
-    document.getElementById('btnAttack').addEventListener('click', () => {
-      if (selectedUnits.length > 0) {
-        const pos = worldToScreen(POSITIONS.south.x, POSITIONS.south.y);
-        const worldPos = screenToWorld(pos.x, pos.y);
-        for (const u of selectedUnits) {
-          if (u.attack > 0) {
-            u.state = 'attacking';
-            const targets = entities.filter(e => e.kingdom !== 'north' && e.hp > 0);
-            if (targets.length > 0) u.target = targets[0];
-          }
-        }
-      }
-    });
-
-    document.getElementById('btnStop').addEventListener('click', () => {
-      for (const u of selectedUnits) {
-        u.state = 'idle';
-        u.target = null;
-        u.targetX = null;
-        u.targetY = null;
-      }
-    });
-
-    // النقر على الخريطة الصغيرة
-    miniCanvas.addEventListener('click', (e) => {
-      const rect = miniCanvas.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / MW * MAP_SIZE;
-      const y = (e.clientY - rect.top) / MH * MAP_SIZE;
-      camera.x = clamp(x - W / 2 / zoom, 0, MAP_SIZE - W / zoom);
-      camera.y = clamp(y - H / 2 / zoom, 0, MAP_SIZE - H / zoom);
-    });
-
-    // Touch support
-    let touchStartX = 0, touchStartY = 0;
-    canvas.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 1) {
-        isSelecting = true;
-        selStartX = e.touches[0].clientX;
-        selStartY = e.touches[0].clientY;
-        touchStartX = selStartX;
-        touchStartY = selStartY;
-      }
-    });
-
-    canvas.addEventListener('touchmove', (e) => {
-      if (e.touches.length === 1 && isSelecting) {
-        selEndX = e.touches[0].clientX;
-        selEndY = e.touches[0].clientY;
-      }
-    });
-
-    canvas.addEventListener('touchend', (e) => {
-      if (isSelecting) {
-        isSelecting = false;
-        selectedUnits = [];
-        const x = Math.min(selStartX, selEndX);
-        const y = Math.min(selStartY, selEndY);
-        const w = Math.abs(selEndX - selStartX);
-        const h = Math.abs(selEndY - selStartY);
-        for (const unit of entities) {
-          if (unit.kind !== 'unit' || unit.kingdom !== 'north') continue;
-          const pos = worldToScreen(unit.x, unit.y);
-          if (pos.x > x && pos.x < x + w && pos.y > y && pos.y < y + h) {
-            selectedUnits.push(unit);
-          }
-        }
-      }
-    });
-
-    // تعطيل السياق
-    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-
-    // التهيئة والبدء
-    generateTerrain();
-    initResources();
-    generateResources();
-    initKingdoms();
-    requestAnimationFrame(gameLoop);
+    Logger.success('✅ MALAND RTS Ready!');
   </script>
 </body>
 </html>
